@@ -51,6 +51,8 @@ int main(void)
     InitWindow(width, height, "This is a imgui test");
     SetTargetFPS(60);
 
+    // ImFontAtlas_AddFontFromFileTTF();
+
     // cimgui variables
     struct ImGuiIO *io;
 

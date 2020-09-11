@@ -32,7 +32,7 @@ OBJ_FILES := $(patsubst $(SRC_D)%.c,$(OBJ_D)%.o,$(SRC_FILES))
 
 INCLUDE_D := -I$(LIBS_D)include/
 STATIC_LIBS_D := -L$(LIBS_D)static/
-CFLAGS := -O0 -Wpedantic -g -Wall -std=c11 -g3 -D_FORTIFY_SOURCE=2 -DOS_$(DETTECTED_OS) 
+CFLAGS := -O0 -Wpedantic -g -Wall -std=gnu11 -g3 -D_FORTIFY_SOURCE=2 -DOS_$(DETTECTED_OS) 
 DEBUGGER := kdbg # Other options: cgdb gdb
 MK_DIR:= mkdir -p
 BIN_EXTENSION = bin
@@ -65,9 +65,9 @@ endif
 # Build Targets
 #//////////////
 
-.PHONY: web main test run_% debug_optimized debug_unoptimized print_information create_folder_structure run_html_u run_html_o run_performance_test init_project
+.PHONY: web main copy_assets test run_% debug_optimized debug_unoptimized print_information create_folder_structure run_html_u run_html_o run_performance_test init_project
 
-all: print_information $(BLD_D)main.$(BIN_EXTENSION)
+all: print_information main web
 
 $(OBJ_D)%.o: $(SRC_D)%.c
 	$(CC_COMMAND) -o $(OBJ_D)$@ $^ $(LINK_LIBS)
@@ -87,6 +87,7 @@ $(BLD_D)%.$(BIN_EXTENSION): $(SRC_FILES)
 
 main: $(SRC_FILES)
 	$(CC_COMMAND) -o $(BLD_D)$@.bin $^ $(LINK_LIBS)
+	@make copy_assets
 
 web: $(HTML_D)main.html
 	mv $(HTML_D)main.html $(HTML_D)index.html
@@ -128,6 +129,9 @@ run_%: $(BLD_D)%.$(BIN_EXTENSION)
 
 test_%: $(TEST_BLD_D)%.spec.$(BIN_EXTENSION)
 	$^
+
+copy_assets:
+	cp -r assets $(BLD_D)
 
 $(ASM_D)%.S: $(SRC_D)%.c
 	$(CC_COMMAND) -o $@ $(CFLAGS) -S $^ $(LINK_LIBS)  

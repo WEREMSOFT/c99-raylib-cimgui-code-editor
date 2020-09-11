@@ -7,6 +7,7 @@ typedef struct editor_options_t {
     bool show_editor_window;
     bool should_close_window;
     bool show_fps;
+    bool show_demo_window;
 } editor_options_t;
 
 #endif
