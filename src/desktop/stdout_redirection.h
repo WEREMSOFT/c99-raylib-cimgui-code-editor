@@ -18,7 +18,8 @@ void std_out_redirection_fini(void);
 
 static int  stdout_bk; //is fd for stdout backup
 static int  stderr_bk; //is fd for stdout backup
-static int pipefd[3];
+static int pipefd[2];
+static int pipeerrfd[2];
 
 void stdout_redirection_init(void){
 
@@ -30,26 +31,26 @@ void stdout_redirection_init(void){
 
    // What used to be stdout will now go to the pipe.
    dup2(pipefd[1], fileno(stdout));
-   dup2(pipefd[2], fileno(stderr));
+   dup2(pipeerrfd[1], fileno(stderr));
 
    printf("stdout redirection initialized. Loging to buffer\n");
    fflush(stdout);
    fflush(stderr);
    close(pipefd[1]);
-   close(pipefd[2]);
+   close(pipeerrfd[1]);
 }
 
 void std_out_redirection_update_buffer(dstring_t* buffer){
    char temp_buf[1001] = {0};
    read(pipefd[0], temp_buf, 1000);
    dstring_append_char_ptr(buffer, temp_buf);
-   read(pipefd[1], temp_buf, 1000);
+   read(pipeerrfd[0], temp_buf, 1000);
    dstring_append_char_ptr(buffer, temp_buf);
 }
 
 void std_out_redirection_fini(void) {
    close(pipefd[1]);
-   close(pipefd[2]);
+   close(pipeerrfd[1]);
 
    dup2(stdout_bk, fileno(stdout));//restore
    dup2(stderr_bk, fileno(stderr));//restore
