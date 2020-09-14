@@ -14,6 +14,9 @@
 #include "editor_options.h"
 extern editor_options_t editor_options;
 
+#define __IMPLEMENT_STDOUT_REDIRECTION__
+#include "desktop/stdout_redirection.h"
+
 ImDrawData *draw_data;
 
 void update_frame()
@@ -46,6 +49,8 @@ int main(void)
 #endif
     int width = WIDTH;
     int height = HEIGHT;
+
+    stdout_redirection_init();
 
     // Init Raylib
     InitWindow(width, height, "This is a imgui test");
@@ -87,6 +92,6 @@ int main(void)
     }
 #endif
     CloseWindow();
-
+    std_out_redirection_fini();
     return 0;
 }
