@@ -2,6 +2,7 @@
 #include "../../cimgui_impl_raylib.h"
 #include <raylib.h>
 #include <math.h>
+#include "../stdout_redirection.h"
 
 static dstring_t self = {0};
 static dstring_t buffer = {0};
@@ -26,7 +27,9 @@ void log_fini(){
 }
 
 void log_draw(bool* is_open){
+
     if(!*is_open) return;
+    std_out_redirection_update_buffer(&self);
     igBegin("log", is_open, 0);
     {
         igSetWindowPosVec2((ImVec2){100.0f, 100.0f}, ImGuiCond_Once);

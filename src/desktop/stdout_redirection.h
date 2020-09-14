@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include "../dstring/dynamic_string.h"
 
 void stdout_redirection_init(void);
-void std_out_redirection_get_buffer(char *buff, int size);
+void std_out_redirection_update_buffer(dstring_t* buffer);
 void std_out_redirection_fini(void);
 
 #endif
@@ -15,38 +17,42 @@ void std_out_redirection_fini(void);
 #include <unistd.h>
 
 static int  stdout_bk; //is fd for stdout backup
-static int pipefd[2];
+static int  stderr_bk; //is fd for stdout backup
+static int pipefd[3];
 
 void stdout_redirection_init(void){
 
    printf("Initializing stdout redirection\n");
    stdout_bk = dup(fileno(stdout));
+   stderr_bk = dup(fileno(stderr));
 
-   pipe2(pipefd, 0); // O_NONBLOCK);
+   pipe2(pipefd, O_NONBLOCK);
 
    // What used to be stdout will now go to the pipe.
    dup2(pipefd[1], fileno(stdout));
+   dup2(pipefd[2], fileno(stderr));
 
    printf("stdout redirection initialized. Loging to buffer\n");
-   fflush(stdout);//flushall();
+   fflush(stdout);
+   fflush(stderr);
    close(pipefd[1]);
+   close(pipefd[2]);
 }
 
-void std_out_redirection_get_buffer(char *buff, int size){
-    read(pipefd[0], buff, size); 
+void std_out_redirection_update_buffer(dstring_t* buffer){
+   char temp_buf[1001] = {0};
+   read(pipefd[0], temp_buf, 1000);
+   dstring_append_char_ptr(buffer, temp_buf);
+   read(pipefd[1], temp_buf, 1000);
+   dstring_append_char_ptr(buffer, temp_buf);
 }
 
 void std_out_redirection_fini(void) {
-   fflush(stdout);//flushall();
-   write(pipefd[1], "good-bye", 9); // null-terminated string!
    close(pipefd[1]);
+   close(pipefd[2]);
 
    dup2(stdout_bk, fileno(stdout));//restore
-   printf("this is now\n");
-
-   char buf[1000];
-   read(pipefd[0], buf, 1000); 
-   printf("got this from the pipe >>>%s<<<\n", buf);
+   dup2(stderr_bk, fileno(stderr));//restore
 }
 
 #undef __IMPLEMENT_STDOUT_REDIRECTION__
