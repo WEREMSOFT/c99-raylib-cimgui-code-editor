@@ -10,7 +10,7 @@
 #define WIDTH 1024
 #define HEIGHT 768
 
-#include "editor.h"
+#include "desktop/desktop.h"
 #include "editor_options.h"
 extern editor_options_t editor_options;
 
@@ -29,7 +29,7 @@ void update_frame()
     {
         ClearBackground(DARKBLUE);
         
-        draw_editor();
+        desktop_draw();
 
         igRender();
         draw_data = igGetDrawData();
@@ -67,7 +67,7 @@ int main(void)
     // Initialize keyboard and mouse events
     ImGui_ImplRaylib_Init();
 
-    // Create textures
+
 
     // Build and load the texture atlas into a texture
     // (In the examples/ app this is usually done within the ImGui_ImplXXX_Init() function from one of the demo Renderer)
@@ -78,10 +78,10 @@ int main(void)
     // At this point you've got the texture data and you need to upload that your your graphic system:
     // After we have created the texture, store its pointer/identifier (_in whichever format your engine uses_) in 'io.Fonts->TexID'.
     // This will be passed back to your via the renderer. Basically ImTextureID == void*. Read FAQ for details about ImTextureID.
-    Image image = LoadImageEx(pixels, width, height);
+    Image image = LoadImageEx((Color *)pixels, width, height);
     Texture2D texture = LoadTextureFromImage(image); //MyEngine::CreateTextureFromMemoryPixels(pixels, width, height, TEXTURE_TYPE_RGBA32)
     io->Fonts->TexID = (void *)&texture.id;
-
+    desktop_data_init();
 
 #ifdef PLATFORM_WEB
     emscripten_set_main_loop(update_frame, 0, 1);
@@ -91,6 +91,7 @@ int main(void)
         update_frame();
     }
 #endif
+    desktop_data_fini();
     CloseWindow();
     std_out_redirection_fini();
     return 0;

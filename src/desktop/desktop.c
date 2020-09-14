@@ -10,14 +10,12 @@
 #include "../dstring/dynamic_string.h"
 #include "editor_data.h"
 #include "../dstring/dynamic_string.h"
-#include "../test_shl.h"
 
 extern editor_options_t editor_options;
 
 static editor_data_t editor_data = {0};
 
 void desktop_data_init(void){
-    cadorna_t c = cadorna_create();
     editor_data.source_files[editor_data.source_files_count++] = dstring_create_char_ptr(
             "\n"
             "#include<stdio.h>\n"
@@ -38,7 +36,7 @@ void desktop_data_fini(void){
     }
 }
 
-int input_text_callback(ImGuiInputTextCallbackData *data) {
+static int input_text_callback(ImGuiInputTextCallbackData *data) {
     if((IsKeyDown(KEY_RIGHT_CONTROL) || IsKeyDown(KEY_LEFT_CONTROL)) && IsKeyPressed(KEY_ENTER)){
         char selected_text[data->BufSize];
 
@@ -95,6 +93,7 @@ void desktop_draw(void){
             }
             igEndMenu();
         }
+        
 
         if(igBeginMenu("View", true)){
             if(igMenuItemBool("Log", NULL, editor_options.show_log, true)){
@@ -102,8 +101,7 @@ void desktop_draw(void){
             }
             igEndMenu();
         }
-        igEndMainMenuBar();
-    }
+    }igEndMainMenuBar();
 
     if(editor_options.show_editor_window){
         igBegin("noname.c", &editor_options.show_editor_window, ImGuiWindowFlags_NoCollapse);

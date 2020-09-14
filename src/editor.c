@@ -38,6 +38,7 @@ int input_text_callback(ImGuiInputTextCallbackData *data) {
         /* close */
         pclose(fp);
     }
+    return 0;
 }
 
 void draw_editor(void){
@@ -69,8 +70,8 @@ void draw_editor(void){
         igEndMainMenuBar();
     }
 
-    if(editor_options.show_editor_window){
-        igBegin("noname.c", true, 0);
+    // if(editor_options.show_editor_window){
+        igBegin("noname.c", &editor_options.show_editor_window, 0);
         {
             igSetWindowSizeVec2((ImVec2){520, 600}, ImGuiCond_FirstUseEver);
             static char text[1024 * 16] =
@@ -88,9 +89,10 @@ void draw_editor(void){
             }
 
         }igEnd();
-    }
+    // }
     if(editor_options.show_demo_window){
-        igShowDemoWindow(true);
+        bool visible = true;
+        igShowDemoWindow(&visible);
     }
 
     if(editor_options.show_fps){
