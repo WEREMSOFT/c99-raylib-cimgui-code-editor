@@ -47,6 +47,7 @@ int main(void)
 #elif defined OS_Darwin
     printf("MacOS dettected\n");
 #endif
+    
     int width = WIDTH;
     int height = HEIGHT;
 

@@ -1,10 +1,10 @@
-
+make main
 make run_main
 make clean
 make all
 
 git status
 git add * --all
-git commit --am "[ADD] Testing configuration"
+git commit -am "[ADD] Testing configuration"
 
-
+git push
